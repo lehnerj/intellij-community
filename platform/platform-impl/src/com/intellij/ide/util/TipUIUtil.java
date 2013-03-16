@@ -61,6 +61,10 @@ public class TipUIUtil {
       String replaced = text.toString().replace("&productName;", ApplicationNamesInfo.getInstance().getFullProductName());
       replaced = replaced.replace("&majorVersion;", ApplicationInfo.getInstance().getMajorVersion());
       replaced = replaced.replace("&minorVersion;", ApplicationInfo.getInstance().getMinorVersion());
+
+      // move the scrollbar to the beginning of the view
+      browser.setLocation(0,0);
+
       browser.read(new StringReader(replaced), url);
     }
     catch (IOException e) {
