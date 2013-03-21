@@ -245,7 +245,7 @@ public class RunContentBuilder extends LogConsoleManagerBase {
     actionGroup.addSeparator();
     actionGroup.add(myUi.getOptions().getLayoutActions());
     actionGroup.addSeparator();
-    actionGroup.add(PinToolwindowTabAction.getPinAction());
+    actionGroup.add(PinToolwindowTabAction.getPinAction(component));
     actionGroup.add(new CloseAction(myExecutor, contentDescriptor, getProject()));
     final String helpId = contentDescriptor.getHelpId();
     actionGroup.add(new ContextHelpAction(helpId != null ? helpId : myExecutor.getHelpId()));

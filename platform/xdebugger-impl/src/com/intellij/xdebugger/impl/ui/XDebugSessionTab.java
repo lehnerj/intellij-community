@@ -190,7 +190,7 @@ public class XDebugSessionTab extends DebuggerSessionTabBase {
 
     leftToolbar.addSeparator();
 
-    leftToolbar.add(PinToolwindowTabAction.getPinAction());
+    leftToolbar.add(PinToolwindowTabAction.getPinAction(myUi.getComponent()));
     leftToolbar.add(new CloseAction(executor, myRunContentDescriptor, getProject()));
     leftToolbar.add(new ContextHelpAction(executor.getHelpId()));
 

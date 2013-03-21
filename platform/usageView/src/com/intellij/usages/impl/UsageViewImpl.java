@@ -25,6 +25,7 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.extensions.Extensions;
 import com.intellij.openapi.ide.CopyPasteManager;
+import com.intellij.openapi.keymap.KeymapManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -545,11 +546,17 @@ public class UsageViewImpl implements UsageView, UsageModelTracker.UsageModelTra
     });
 
 
+    // circular dependency if PinToolwindowTabAction.java would be added to the classpath
+    AnAction pinToolwindowTab = ActionManager.getInstance().getAction("PinToolwindowTab");
+    CustomShortcutSet customShortcutSet =
+      new CustomShortcutSet(KeymapManager.getInstance().getActiveKeymap().getShortcuts(IdeActions.ACTION_PIN_ACTIVE_TAB));
+    pinToolwindowTab.registerCustomShortcutSet(customShortcutSet, component);
+
     return new AnAction[] {
       showSettings(),
       canPerformReRun() ? new ReRunAction() : null,
       new CloseAction(),
-      ActionManager.getInstance().getAction("PinToolwindowTab"),
+      pinToolwindowTab,
       createRecentFindUsagesAction(),
       expandAllAction,
       collapseAllAction,

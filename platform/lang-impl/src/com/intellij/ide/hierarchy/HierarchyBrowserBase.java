@@ -97,7 +97,7 @@ public abstract class HierarchyBrowserBase extends SimpleToolWindowPanel impleme
   protected void appendActions(@NotNull DefaultActionGroup actionGroup, @Nullable String helpID) {
     actionGroup.add(myAutoScrollToSourceHandler.createToggleAction());
     actionGroup.add(ActionManager.getInstance().getAction(IdeActions.ACTION_EXPAND_ALL));
-    actionGroup.add(new PinToolwindowTabAction(){
+    actionGroup.add(new PinToolwindowTabAction(this){
       @Override
       public void update(AnActionEvent event) {
         super.update(event);

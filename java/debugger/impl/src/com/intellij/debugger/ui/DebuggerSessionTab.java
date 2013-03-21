@@ -329,7 +329,7 @@ public class DebuggerSessionTab extends DebuggerSessionTabBase implements Dispos
 
     leftToolbar.addSeparator();
 
-    addActionToGroup(leftToolbar, PinToolwindowTabAction.ACTION_NAME);
+    leftToolbar.add(PinToolwindowTabAction.getPinAction(myRunContentDescriptor.getComponent()));
 
     myDebugUIEnvironment.initActions(myRunContentDescriptor, leftToolbar);
 

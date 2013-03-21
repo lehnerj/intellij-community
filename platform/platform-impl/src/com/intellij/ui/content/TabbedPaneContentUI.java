@@ -244,7 +244,7 @@ public class TabbedPaneContentUI implements ContentUI, PropertyChangeListener {
           group.add(new TabbedContentAction.CloseAllButThisAction(content));
         }
         group.addSeparator();
-        group.add(PinToolwindowTabAction.getPinAction());
+        group.add(PinToolwindowTabAction.getPinAction(this));
         group.addSeparator();
         group.add(new TabbedContentAction.MyNextTabAction(myManager));
         group.add(new TabbedContentAction.MyPreviousTabAction(myManager));

@@ -345,7 +345,7 @@ public class ToolWindowContentUi extends JPanel implements ContentUI, PropertyCh
     group.add(new TabbedContentAction.CloseAllButThisAction(content));
     group.addSeparator();
     if (content.isPinnable()) {
-      group.add(PinToolwindowTabAction.getPinAction());
+      group.add(PinToolwindowTabAction.getPinAction(content.getComponent()));
       group.addSeparator();
     }
 

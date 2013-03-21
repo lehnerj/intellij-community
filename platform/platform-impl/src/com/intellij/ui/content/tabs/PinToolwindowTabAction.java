@@ -17,6 +17,7 @@ package com.intellij.ui.content.tabs;
 
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.*;
+import com.intellij.openapi.keymap.KeymapManager;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.impl.content.ToolWindowContentUi;
@@ -27,19 +28,43 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
+
 /**
  * @author spleaner
  */
 public class PinToolwindowTabAction extends ToggleAction implements DumbAware {
   @NonNls public static final String ACTION_NAME = "PinToolwindowTab";
 
-  public static AnAction getPinAction() {
-    return ActionManager.getInstance().getAction(ACTION_NAME);
+  /**
+   * Looks up the pin action from the ActionManager and registers the default shortcut set
+   * @param component the component where the default shortcutSet should be registered
+   */
+  public static AnAction getPinAction(JComponent component) {
+    AnAction action = ActionManager.getInstance().getAction(ACTION_NAME);
+    CustomShortcutSet customShortcutSet =
+      new CustomShortcutSet(KeymapManager.getInstance().getActiveKeymap().getShortcuts(IdeActions.ACTION_PIN_ACTIVE_TAB));
+    action.registerCustomShortcutSet(customShortcutSet, component);
+    return action;
   }
 
+  /**
+   * Constructor called from ActionManager, be sure to call registerCustomShortcutSet or use the other constructor
+   */
   public PinToolwindowTabAction() {
     super("Pin Tab", "Pin tool window tab", AllIcons.General.Pin_tab);
   }
+
+  /**
+   * @param component the component where the default shortcut set should be registered
+   */
+  public PinToolwindowTabAction(JComponent component) {
+    this();
+    CustomShortcutSet customShortcutSet =
+      new CustomShortcutSet(KeymapManager.getInstance().getActiveKeymap().getShortcuts(IdeActions.ACTION_PIN_ACTIVE_TAB));
+    registerCustomShortcutSet(customShortcutSet, component);
+  }
+
 
   @Nullable
   private static Content getContextContent(@NotNull AnActionEvent event) {
