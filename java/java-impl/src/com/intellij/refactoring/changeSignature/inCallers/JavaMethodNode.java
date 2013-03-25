@@ -15,6 +15,7 @@
  */
 package com.intellij.refactoring.changeSignature.inCallers;
 
+import com.intellij.ide.hierarchy.call.CallHierarchyNodeDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.presentation.java.ClassPresentationUtil;
@@ -22,17 +23,19 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.searches.MethodReferencesSearch;
 import com.intellij.psi.util.PsiFormatUtil;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.psi.util.PsiUtil;
+import com.intellij.psi.util.TypeConversionUtil;
 import com.intellij.refactoring.changeSignature.MethodNodeBase;
 import com.intellij.ui.ColoredTreeCellRenderer;
 import com.intellij.ui.JBColor;
 import com.intellij.ui.SimpleTextAttributes;
+import com.intellij.util.Processor;
+import com.intellij.util.containers.*;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
+import java.util.*;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 public class JavaMethodNode extends MethodNodeBase<PsiMethod> {
 
@@ -47,17 +50,21 @@ public class JavaMethodNode extends MethodNodeBase<PsiMethod> {
 
   @Override
   protected List<PsiMethod> computeCallers() {
-    final PsiReference[] refs =
-      MethodReferencesSearch.search(myMethod, GlobalSearchScope.allScope(myProject), true).toArray(PsiReference.EMPTY_ARRAY);
 
+    final Set<PsiMethod> methodsToFind = new HashSet<PsiMethod>();
+    methodsToFind.add(myMethod);
+    ContainerUtil.addAll(methodsToFind, myMethod.findDeepestSuperMethods());
     List<PsiMethod> result = new ArrayList<PsiMethod>();
+    for (final PsiMethod methodToFind : methodsToFind) {
+      final PsiReference[] refs =
+      MethodReferencesSearch.search(methodToFind, GlobalSearchScope.allScope(myProject), true).toArray(PsiReference.EMPTY_ARRAY);
     for (PsiReference ref : refs) {
       final PsiElement element = ref.getElement();
       if (!(element instanceof PsiReferenceExpression) ||
           !(((PsiReferenceExpression)element).getQualifierExpression() instanceof PsiSuperExpression)) {
-        final PsiElement enclosingContext = PsiTreeUtil.getParentOfType(element, PsiMethod.class, PsiClass.class);
+        final PsiElement enclosingContext = PsiTreeUtil.getNonStrictParentOfType(element, PsiMethod.class, PsiClass.class);
         if (enclosingContext instanceof PsiMethod &&
-            !myMethod.equals(enclosingContext) && !myCalled.contains(myMethod)) { //do not add recursive methods
+            !methodsToFind.equals(enclosingContext) && !myCalled.contains(methodsToFind)) { //do not add recursive methods
           result.add((PsiMethod)enclosingContext);
         }
         else if (element instanceof PsiClass) {
@@ -65,6 +72,7 @@ public class JavaMethodNode extends MethodNodeBase<PsiMethod> {
           result.add(JavaPsiFacade.getElementFactory(myProject).createMethodFromText(aClass.getName() + "(){}", aClass));
         }
       }
+    }
     }
     return result;
   }
